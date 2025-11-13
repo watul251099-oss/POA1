@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick UPI Payment</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Tailwind for Inter font -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles for a clean look */
+        .card {
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md bg-white rounded-xl card p-6 sm:p-8">
+        <!-- Header -->
+        <h1 class="text-3xl font-extrabold text-center text-indigo-700 mb-2">
+            Instant UPI Payment
+        </h1>
+        <p class="text-center text-gray-500 mb-2">
+            Secure & Instant UPI Payment
+        </p>
+        <p class="text-center text-gray-500 mb-8">
+            Scan the code or copy the ID below to pay.
+        </p>
+
+        <!-- QR Code Section -->
+        <div class="flex flex-col items-center mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">1. Scan QR Code</h2>
+            <div class="p-4 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300">
+                <!-- UPI QR Code (your local image file) is referenced here -->
+                <img id="qrCodeImage" 
+                    src="image.jpg" 
+                    alt="UPI QR Code" 
+                    class="rounded-lg w-64 h-64 shadow-md"
+                    onerror="this.onerror=null; this.src='https://placehold.co/250x250/FF0000/ffffff?text=QR+Image+Missing';"
+                >
+            </div>
+            <p class="mt-3 text-sm text-center text-gray-500">
+                Use any UPI app (PhonePe, GPay, Paytm, etc.) to scan.
+            </p>
+        </div>
+
+        <!-- UPI ID Section -->
+        <div class="mt-8 border-t pt-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">2. Copy UPI ID</h2>
+            
+            <!-- Your updated UPI ID -->
+            <input type="text" id="upiIdInput" readonly value="9820589192-3@ybl"
+                   class="w-full text-center p-3 text-lg font-mono tracking-wider bg-indigo-50 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150">
+            
+            <button id="copyButton" 
+                    class="w-full mt-4 flex items-center justify-center px-4 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                  <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+                </svg>
+                Copy UPI ID
+            </button>
+        </div>
+
+        <p id="copyMessage" class="text-sm text-center mt-3 text-green-600 opacity-0 transition duration-300"></p>
+
+        <!-- Important Note Section -->
+        <div class="mt-8 pt-6 border-t border-gray-200">
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-yellow-800">
+                            Important Note
+                        </h3>
+                        <div class="mt-2 text-sm text-yellow-700">
+                            <p>
+                                After completing your payment, please share a screenshot of the payment confirmation with us on WhatsApp. This allows us to cross-check the details and ensure your registration is finalized.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const upiId = document.getElementById('upiIdInput').value;
+        const copyButton = document.getElementById('copyButton');
+        const copyMessage = document.getElementById('copyMessage');
+        const upiIdInput = document.getElementById('upiIdInput');
+
+        copyButton.addEventListener('click', () => {
+            // Select the text field
+            upiIdInput.select();
+            upiIdInput.setSelectionRange(0, 99999); // For mobile devices
+
+            // Copy the text inside the text field
+            try {
+                // Use execCommand for broader compatibility, especially in iFrames
+                document.execCommand('copy');
+                
+                // Show success message
+                copyMessage.textContent = 'UPI ID Copied! You can now paste it into your payment app.';
+                copyMessage.classList.remove('opacity-0');
+                copyMessage.classList.add('opacity-100');
+
+                // Clear message after 3 seconds
+                setTimeout(() => {
+                    copyMessage.classList.remove('opacity-100');
+                    copyMessage.classList.add('opacity-0');
+                }, 3000);
+
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                copyMessage.textContent = 'Error: Could not copy ID. Please copy manually.';
+                copyMessage.classList.remove('opacity-0', 'text-green-600');
+                copyMessage.classList.add('opacity-100', 'text-red-600');
+            }
+        });
+    </script>
+</body>
+</html>
